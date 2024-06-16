@@ -1,0 +1,52 @@
+services:
+  # server:
+  #   image: nginx:latest
+  #   container_name: andersen-server
+  #   restart: always
+  #   ports:
+  #   - 8888:80
+  #   volumes:
+  #   - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+  #   depends_on:
+  #     - laravel
+  #   networks:
+  #     - andersen
+
+  laravel:
+    build: ./laravel
+    container_name: andersen-laravel
+    restart: always
+    ports:
+    - 8000:8000
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+    - ./laravel:/app
+    networks:
+      - andersen
+
+  mysql:
+    image: mysql:latest
+    container_name: andersen-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: andersen
+      MYSQL_ROOT_PASSWORD: admin
+    expose:
+    - "3306"
+    volumes:
+    - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      retries: 5
+      timeout: 10s
+    networks:
+      - andersen
+
+volumes:
+  mysql_data:
+
+networks:
+  andersen:
+    name: andersen
