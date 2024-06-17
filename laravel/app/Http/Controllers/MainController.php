@@ -12,9 +12,9 @@ class MainController extends Controller
         $users = UserData::orderBy('created_at', 'desc')->paginate(10);
 
         if ($users->isNotEmpty()) {
-            return view('layouts.main', compact('users'));
+            return view('data', compact('users'));
         } else {
-            return view('layouts.main');
+            return view('layout.main');
         }
     }
 }
